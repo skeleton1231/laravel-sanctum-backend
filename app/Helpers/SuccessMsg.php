@@ -8,9 +8,12 @@ class SuccessMsg
 
     const OPERATION_SUCCESSFUL = 100000;
     const USER_REGISTER_SUCCESS  = 100001;
+
+    const USER_LOGIN_SUCCESS = 100002;
     private static $messages = [
         self::OPERATION_SUCCESSFUL => 'Operation successful',
         self::USER_REGISTER_SUCCESS => 'User registration successful',
+        self::USER_LOGIN_SUCCESS => 'User login successful',
         // ... add more success messages
     ];
 

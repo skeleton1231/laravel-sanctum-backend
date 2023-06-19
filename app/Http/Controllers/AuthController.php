@@ -48,7 +48,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
+        $data = $request->all();
 
         $validator = Validator::make($data, [
             'email' => 'required|string|email',
@@ -56,7 +56,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+            return ApiResponse::error(ErrorCode::VALIDATION_FAILED, $validator->errors());
         }
 
         $user = User::where('email', $data['email'])->first();
@@ -69,11 +69,11 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
+        return ApiResponse::success([
             'user' => $user,
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ], 200);
+        ], SuccessMsg::USER_LOGIN_SUCCESS);
     }
 
     public function logout(Request $request)
@@ -87,8 +87,8 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
-        return response()->json([
+        return ApiResponse::success([
             'user' => $request->user()
-        ], 200);
+        ], SuccessMsg::OPERATION_SUCCESSFUL);
     }
 }
