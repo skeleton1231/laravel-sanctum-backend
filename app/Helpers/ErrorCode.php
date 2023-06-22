@@ -8,7 +8,7 @@ class ErrorCode
         // 200
         self::USER_REGISTER_EMAIL_ALREADY_EXISTS => 'Email already exists',
         self::VALIDATION_FAILED => 'Validate Fail',
-
+        self::PASSWORD_NOT_MATCHED=>'User Password does not match',
         // 400
         self::AUTH_TOKEN_INVALID => 'Authentication token invalid',
         self::AUTH_PERMISSION_DENIED => 'Permission denied',

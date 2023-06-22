@@ -3,15 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 // php artisan test --filter UserTest
 class UserTest extends TestCase
 {
-    use RefreshDatabase;  // This trait is used to rollback database changes after each test
-
     /**
      * Test register a new user
      *

@@ -14,6 +14,7 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+
         $data = $request->all();
 
         $validator = Validator::make($data, [
@@ -62,9 +63,7 @@ class AuthController extends Controller
         $user = User::where('email', $data['email'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            return response()->json([
-                'message' => 'Invalid login details'
-            ], 401);
+            return ApiResponse::error(ErrorCode::PASSWORD_NOT_MATCHED);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -80,9 +79,8 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'Logout successfully'
-        ], 200);
+        return ApiResponse::success([
+        ], SuccessMsg::USER_LOGIN_SUCCESS);
     }
 
     public function user(Request $request)
@@ -91,4 +89,53 @@ class AuthController extends Controller
             'user' => $request->user()
         ], SuccessMsg::OPERATION_SUCCESSFUL);
     }
+
+    // create a new controller for user update with laravel sanctum
+    public function update(Request $request)
+    {
+        $data = $request->all();
+
+        $validator = Validator::make($data, [
+            'name' => 'string|unique:users',
+            'email' => 'string|email|unique:users',
+            'password' => 'string',
+            'passwordConfirmation' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::error(ErrorCode::VALIDATION_FAILED, $validator->errors());
+        }
+
+        if ($data['password'] != $data['passwordConfirmation']) {
+            return ApiResponse::error(ErrorCode::PASSWORD_NOT_MATCHED);
+        }
+
+        $user = $request->user();
+
+        if ($data['name']) {
+            $user->name = $data['name'];
+        }
+
+        if ($data['email']) {
+            $user->email = $data['email'];
+        }
+
+        if ($data['password']) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
+
+        return ApiResponse::success([
+            'user' => $user
+        ], SuccessMsg::OPERATION_SUCCESSFUL);
+    }
 }
+
+
+
+
+
+
+
+
