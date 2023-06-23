@@ -130,6 +130,15 @@ class AuthController extends Controller
             'user' => $user
         ], SuccessMsg::OPERATION_SUCCESSFUL);
     }
+
+    // // make a new controller for user delete with laravel sanctum
+    // public function delete(Request $request)
+    // {
+    //     $request->user()->delete();
+
+    //     return ApiResponse::success([
+    //     ], SuccessMsg::OPERATION_SUCCESSFUL);
+    // }
 }
 
 
