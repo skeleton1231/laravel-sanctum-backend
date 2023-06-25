@@ -27,6 +27,7 @@ class PaymentController extends Controller
      */
     public function create(Request $request)
     {
+        // price_1NMlZeDSmzjzdNYA59hyCrlw
         // Payment Create
         $request->user()->createAsStripeCustomer();
 

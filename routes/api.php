@@ -33,10 +33,17 @@ Route::prefix('v1/user')->group(function () {
     });
 })->middleware('logrequest');;
 
-Route::get('/payments/paypal/success/{plan_id}', 'PaymentController@paypalSuccess')->name('payments.paypal.success');
-Route::get('/payments/paypal/cancel', 'PaymentController@paypalCancel')->name('payments.paypal.cancel');
+// Paypal
+// Route::get('/payments/paypal/success/{plan_id}', 'PaymentController@paypalSuccess')->name('payments.paypal.success');
+// Route::get('/payments/paypal/cancel', 'PaymentController@paypalCancel')->name('payments.paypal.cancel');
 
-Route::middleware('auth')->group(function () {
-    Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
-    Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
+// Route::middleware('auth')->group(function () {
+//     Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
+//     Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
+// });
+
+Route::middleware("uth:sanctum")->group(function () {
+    Route::get('plans', [PlanController::class, 'index']);
+    Route::get('plans/{plan}', [PlanController::class, 'list'])->name("plans.list");
+    Route::post('subscription', [PlanController::class, 'subscription'])->name("subscription.create");
 });
