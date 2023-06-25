@@ -32,3 +32,11 @@ Route::prefix('v1/user')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 })->middleware('logrequest');;
+
+Route::get('/payments/paypal/success/{plan_id}', 'PaymentController@paypalSuccess')->name('payments.paypal.success');
+Route::get('/payments/paypal/cancel', 'PaymentController@paypalCancel')->name('payments.paypal.cancel');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
+    Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
+});
