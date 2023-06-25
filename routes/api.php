@@ -47,3 +47,5 @@ Route::middleware("uth:sanctum")->group(function () {
     Route::get('plans/{plan}', [PlanController::class, 'list'])->name("plans.list");
     Route::post('subscription', [PlanController::class, 'subscription'])->name("subscription.create");
 });
+
+Route::middleware('auth:sanctum')->get('/billing-portal', [BillingController::class, 'billingPortal']);

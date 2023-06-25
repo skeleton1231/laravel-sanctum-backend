@@ -38,6 +38,8 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
+        $user->createAsStripeCustomer();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return ApiResponse::success([

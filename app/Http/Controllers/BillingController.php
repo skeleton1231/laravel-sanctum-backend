@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
+use App\Helpers\SuccessMsg;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
-    // show the billing list with laravel sanctum  and json response
-    public function index(Request $request)
+    public function billingPortal(Request $request)
     {
-        return response()->json([
-            'billing' =>$request->user()->billing()
-        ]);
+        $url = $request->user()->billingPortalUrl(route('billing'));
+        return ApiResponse::success([
+            'url' => $url,
+        ],SuccessMsg::OPERATION_SUCCESSFUL);
     }
 }

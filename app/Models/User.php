@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
+use function Illuminate\Events\queueable;
+
 
 class User extends Authenticatable
 {
@@ -52,5 +54,25 @@ class User extends Authenticatable
     public function paymentMethods()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::updated(queueable(function (User $customer) {
+            if ($customer->hasStripeId()) {
+                $customer->syncStripeCustomerDetails();
+            }
+        }));
+    }
+
+    /**
+     * Get the customer name that should be synced to Stripe.
+     */
+    public function stripeName(): string|null
+    {
+        return $this->company_name;
     }
 }
