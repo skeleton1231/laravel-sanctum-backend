@@ -23,11 +23,7 @@ class Plan extends Model
         'description',
     ];
 
-    /**
-     * Write code on Method
-     *
-     * @return response()
-     */
+
     public function getRouteKeyName()
     {
         return 'slug';

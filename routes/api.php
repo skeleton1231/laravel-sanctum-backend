@@ -42,10 +42,22 @@ Route::prefix('v1/user')->group(function () {
 //     Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
 // });
 
-Route::middleware("uth:sanctum")->group(function () {
+Route::middleware("auth:sanctum")->group(function () {
     Route::get('plans', [PlanController::class, 'index']);
     Route::get('plans/{plan}', [PlanController::class, 'list'])->name("plans.list");
     Route::post('subscription', [PlanController::class, 'subscription'])->name("subscription.create");
+
+    Route::get('/stripe-test', function (Request $request) {
+        $user = $request->user();
+
+        try {
+            $stripeCustomer = $user->createAsStripeCustomer();
+            return response()->json(['customerId' => $stripeCustomer->id]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
 });
 
 Route::middleware('auth:sanctum')->get('/billing-portal', [BillingController::class, 'billingPortal']);
+
