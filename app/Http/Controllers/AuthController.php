@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -40,6 +41,21 @@ class AuthController extends Controller
         ]);
 
         //$user->createAsStripeCustomer();
+        try {
+            // 尝试创建 Stripe 客户
+            $user->createAsStripeCustomer();
+        } catch (Throwable $e) { // 捕获任何异常或错误
+            // 记录错误详情到日志文件，以便稍后分析
+            Log::error('Stripe Customer Creation Failed: ' . $e->getMessage());
+
+            // 返回 JSON 响应，包含错误信息
+            // return response()->json([
+            //     'status' => 'error',
+            //     'message' => '系统错误，无法创建 Stripe 客户。', // 为用户显示的友好错误信息
+            //     'error_detail' => $e->getMessage() // 实际的错误详情，这取决于您是否想公开这些信息
+            // ], 500); // 500 是通用的服务器内部错误代码
+        }
+
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

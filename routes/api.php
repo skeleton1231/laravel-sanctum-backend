@@ -21,18 +21,20 @@ Route::get('sanctum/csrf-cookie', function () {
 
 
 Route::prefix('v1/user')->group(function () {
-    Route::middleware('auth:sanctum')->get('/', function (Request $request) {
-        return $request->user();
-    });
-
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     //Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::middleware('auth:sanctum')->group(function() {
+    // 定义一个中间件组
+    Route::middleware(['auth:sanctum'])->group(function () {
+        // 所有在这个组里的路由都会通过指定的中间件
+        Route::get('/', function (Request $request) {
+            return $request->user();
+        });
+
         Route::post('/logout', [AuthController::class, 'logout']);
     });
-})->middleware('logrequest');;
+})->middleware('logrequest');
 
 // Paypal
 // Route::get('/payments/paypal/success/{plan_id}', 'PaymentController@paypalSuccess')->name('payments.paypal.success');
@@ -61,4 +63,3 @@ Route::middleware("auth:sanctum")->group(function () {
 });
 
 Route::middleware('auth:sanctum')->get('/billing-portal', [BillingController::class, 'billingPortal']);
-
