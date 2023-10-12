@@ -6,14 +6,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Kra8\Snowflake\HasSnowflakePrimary;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
+use Snowflake\Snowflakes;
 use function Illuminate\Events\queueable;
-
 
 class User extends Authenticatable
 {
+
+    use HasSnowflakePrimary;
     use HasApiTokens, HasFactory, Notifiable, Billable;
+
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    //public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -61,6 +72,7 @@ class User extends Authenticatable
      */
     protected static function booted(): void
     {
+
         static::updated(queueable(function (User $customer) {
             if ($customer->hasStripeId()) {
                 $customer->syncStripeCustomerDetails();

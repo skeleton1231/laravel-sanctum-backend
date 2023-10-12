@@ -6,7 +6,9 @@ use App\Helpers\ApiResponse;
 use App\Helpers\ErrorCode;
 use App\Helpers\SuccessMsg;
 use App\Models\User;
+use Godruoyi\Snowflake\Snowflake;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -34,30 +36,48 @@ class AuthController extends Controller
             return ApiResponse::error(ErrorCode::PASSWORD_NOT_MATCHED);
         }
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        // 开始事务
+        DB::beginTransaction();
 
-        //$user->createAsStripeCustomer();
         try {
-            // 尝试创建 Stripe 客户
-            $user->createAsStripeCustomer();
-        } catch (Throwable $e) { // 捕获任何异常或错误
-            // 记录错误详情到日志文件，以便稍后分析
-            Log::error('Stripe Customer Creation Failed: ' . $e->getMessage());
+            // $snowflake = app('Kra8\Snowflake\Snowflake');
+            // $id = $snowflake->next();
+            // Log::info("SnowflakeId: " . $id);
+            // 尝试操作
+            $user = User::create([
+                //'id' => $id,
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
 
-            // 返回 JSON 响应，包含错误信息
-            // return response()->json([
-            //     'status' => 'error',
-            //     'message' => '系统错误，无法创建 Stripe 客户。', // 为用户显示的友好错误信息
-            //     'error_detail' => $e->getMessage() // 实际的错误详情，这取决于您是否想公开这些信息
-            // ], 500); // 500 是通用的服务器内部错误代码
+            // 尝试创建 token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            // 如果到达这里，说明上面的操作都成功了，我们可以提交事务
+            DB::commit();
+
+            // ... 返回成功响应 ...
+        } catch (\Exception $e) {
+            // 如果我们捕获到任何异常，我们需要回滚事务
+            DB::rollBack();
+
+            // 记录错误详情到日志文件
+            Log::error('Registration failed: ' . $e->getMessage());
+
+            // 返回错误响应
+            return ApiResponse::error(ErrorCode::SERVER_INTERNAL_ERROR);
         }
 
-
-        $token = $user->createToken('auth_token')->plainTextToken;
+        if ($user->id) {
+            try {
+                // 尝试创建 Stripe 客户
+                $user->createAsStripeCustomer();
+            } catch (\Exception $e) {
+                // 记录错误详情到日志文件
+                Log::error('Stripe create failed: ' . $e->getMessage());
+            }
+        }
 
         return ApiResponse::success([
             'user' => $user,
@@ -169,11 +189,3 @@ class AuthController extends Controller
     //     ], SuccessMsg::OPERATION_SUCCESSFUL);
     // }
 }
-
-
-
-
-
-
-
-
