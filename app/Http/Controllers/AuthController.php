@@ -8,6 +8,7 @@ use App\Helpers\SuccessMsg;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -79,11 +80,21 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        try {
+            // 尝试撤销用于当前请求认证的令牌...
+            $request->user()->currentAccessToken()->delete();
 
-        return ApiResponse::success([
-        ], SuccessMsg::USER_LOGIN_SUCCESS);
+            // 如果成功，返回成功响应
+            return ApiResponse::success([], SuccessMsg::USER_LOGOUT_SUCCESS); // 注意：您可能需要将消息更改为“注销成功”而不是“登录成功”
+        } catch (\Exception $e) {
+            // 捕获任何异常并记录，然后返回错误响应
+            Log::error($e->getMessage());
+            // 返回一个通用的错误消息
+            // 注意：最好不要在生产环境中向用户展示具体的异常信息，因为这可能会暴露系统细节
+            return ApiResponse::error('注销过程中出现问题，请稍后再试。', $e->getCode()); // 可以根据实际情况自定义错误消息和代码
+        }
     }
+
 
     public function user(Request $request)
     {

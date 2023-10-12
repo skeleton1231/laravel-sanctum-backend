@@ -127,10 +127,10 @@ class UserTest extends TestCase
 ```bash
 curl -X POST -H "Content-Type: application/json" \
 -d '{
-    "name": "John Doe",
-    "email": "johndoe@example.com",
-    "password": "password",
-    "password_confirmation": "password"
+    "name": "talhuang000006",
+    "email": "talhuang000006@gmail.com",
+    "password": "12345678",
+    "password_confirmation": "12345678"
 }' \
 http://localhost:8000/api/v1/user/register
 ```
@@ -139,10 +139,10 @@ http://localhost:8000/api/v1/user/register
 ```bash
 curl -X POST -H "Content-Type: application/json" \
 -d '{
-    "email": "johndoe@example.com",
-    "password": "password"
+    "email": "talhuang000005@gmail.com",
+    "password": "12345678"
 }' \
-http://localhost/api/v1/user/login
+http://localhost:8000/api/v1/user/login
 ```
 这将返回一个访问令牌，我们将在后续请求中使用它。
 
