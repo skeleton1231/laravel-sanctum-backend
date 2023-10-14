@@ -47,12 +47,26 @@ class PlanController extends Controller
     public function subscription(Request $request)
     {
         $plan = Plan::find($request->plan);
+        $user = $request->user();
 
-        $subscription = $request->user()->newSubscription($request->plan, $plan->stripe_plan)
-            ->create($request->token);
+        // 创建Stripe客户（如果还没有的话）
+        if (!$user->hasStripeId()) {
+            $user->createAsStripeCustomer();
+        }
+
+        // 创建新订阅
+        $subscription = $user->newSubscription('default', $plan->stripe_plan)
+                             ->create($request->token, [
+                                 'email' => $user->email,
+                                 // 其他需要的Stripe参数
+                             ]);
+
+        // 存储额外的订阅详情到数据库（如果需要）
+        // ...
 
         return ApiResponse::success([
             'subscription' => $subscription,
         ], SuccessMsg::OPERATION_SUCCESSFUL);
     }
+
 }

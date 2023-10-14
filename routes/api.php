@@ -3,11 +3,15 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\BillingController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
-|--------------------------------------------------------------------------
+|-------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
 | routes are loaded by the RouteServiceProvider and all of them will
@@ -18,6 +22,8 @@ use App\Http\Controllers\AuthController;
 Route::get('sanctum/csrf-cookie', function () {
     return response()->json(['csrfToken' => csrf_token()]);
 });
+
+Route::get('/test', [TestController::class, 'index']);
 
 
 Route::prefix('v1/user')->group(function () {
@@ -36,30 +42,12 @@ Route::prefix('v1/user')->group(function () {
     });
 })->middleware('logrequest');
 
-// Paypal
-// Route::get('/payments/paypal/success/{plan_id}', 'PaymentController@paypalSuccess')->name('payments.paypal.success');
-// Route::get('/payments/paypal/cancel', 'PaymentController@paypalCancel')->name('payments.paypal.cancel');
 
-// Route::middleware('auth')->group(function () {
-//     Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
-//     Route::post('/subscriptions/create', [SubscriptionController::class, 'create']);
-// });
 
 Route::middleware("auth:sanctum")->group(function () {
-    Route::get('plans', [PlanController::class, 'index']);
-    Route::get('plans/{plan}', [PlanController::class, 'list'])->name("plans.list");
-    Route::post('subscription', [PlanController::class, 'subscription'])->name("subscription.create");
-
-    Route::get('/stripe-test', function (Request $request) {
-        $user = $request->user();
-
-        try {
-            $stripeCustomer = $user->createAsStripeCustomer();
-            return response()->json(['customerId' => $stripeCustomer->id]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    });
+    Route::get('/plans', [PlanController::class, 'index']);
+    Route::get('/plans/{plan}', [PlanController::class, 'list'])->name("plans.list");
+    Route::post('/subscription', [PlanController::class, 'subscription'])->name("subscription.create");
+    Route::post('/create-subscription', [SubscriptionController::class, 'create']);
+    Route::get('/billing-portal', [BillingController::class, 'billingPortal']);
 });
-
-Route::middleware('auth:sanctum')->get('/billing-portal', [BillingController::class, 'billingPortal']);

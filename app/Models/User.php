@@ -9,12 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Kra8\Snowflake\HasSnowflakePrimary;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
-use Snowflake\Snowflakes;
 use function Illuminate\Events\queueable;
 
 class User extends Authenticatable
 {
-
+    /*
+    @ignore
+    */
     use HasSnowflakePrimary;
     use HasApiTokens, HasFactory, Notifiable, Billable;
 
@@ -24,7 +25,7 @@ class User extends Authenticatable
      *
      * @var bool
      */
-    //public $incrementing = false;
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
