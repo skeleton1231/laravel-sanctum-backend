@@ -42,8 +42,35 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = $request->user();
+
+        try {
+            // Assuming you've received the payment method details from the front-end
+            $paymentMethod = $request->input('payment_method');
+
+            $user->addPaymentMethod($paymentMethod);
+
+            // Retrieve the payment method details from Stripe
+            $stripePaymentMethod = $user->findPaymentMethod($paymentMethod);
+
+            // Create a new Payment instance and set the properties
+            $payment = new \App\Models\Payment();
+            $payment->user_id = $user->id;
+            $payment->stripe_id = $stripePaymentMethod->id;
+            $payment->card_brand = $stripePaymentMethod->card->brand;
+            $payment->card_last_four = $stripePaymentMethod->card->last4;
+            // $payment->trial_ends_at = now()->addDays(30); // If you have a trial period
+
+            $payment->save();
+
+            return ApiResponse::success($payment, SuccessMsg::OPERATION_SUCCESSFUL);
+
+        } catch (\Exception $e) {
+            // Handle error, maybe log it and return a custom message
+            return ApiResponse::error($e->getMessage(), 'Error saving payment method');
+        }
     }
+
 
     /**
      * Display the specified resource.

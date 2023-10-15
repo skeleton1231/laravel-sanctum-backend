@@ -19,6 +19,7 @@ class LogRequest
             $response = $next($request);
 
             if (!$response instanceof Response) {
+                //Log::info('Response type:', $response->getContent());
                 return $response;
             }
 

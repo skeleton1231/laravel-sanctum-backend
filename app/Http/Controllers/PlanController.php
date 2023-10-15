@@ -39,6 +39,7 @@ class PlanController extends Controller
             'intent' => $intent,
         ], SuccessMsg::OPERATION_SUCCESSFUL);
     }
+
     /**
      * Write code on Method
      *

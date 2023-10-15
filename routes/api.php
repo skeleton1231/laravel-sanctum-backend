@@ -7,6 +7,9 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\BillingController;
+use App\Helpers\ApiResponse;
+use App\Helpers\SuccessMsg;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -50,4 +53,17 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post('/subscription', [PlanController::class, 'subscription'])->name("subscription.create");
     Route::post('/create-subscription', [SubscriptionController::class, 'create']);
     Route::get('/billing-portal', [BillingController::class, 'billingPortal']);
+
+    // 在你的 web.php 路由文件中
+    Route::get('/setup-intent', function (Request $request) {
+        // 确认用户已登录，并获取已认证的用户
+        $user = $request->user();
+        return ApiResponse::success([
+            'intent' => $user->createSetupIntent(),
+        ], SuccessMsg::OPERATION_SUCCESSFUL);
+        // 创建一个新的 setup intent
+        // return response()->json([
+        //     'intent' => $user->createSetupIntent()
+        // ]);
+    });
 });
