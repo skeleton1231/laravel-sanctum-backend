@@ -5,9 +5,38 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Helpers\SuccessMsg;
 use Illuminate\Http\Request;
+use Stripe\PaymentIntent;
+use Stripe\Stripe;
 
 class PaymentController extends Controller
 {
+
+    public function createPaymentIntent(Request $request)
+    {
+        // 设置 Stripe 秘钥
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            // 从请求中获取金额和货币，这里假设您的请求中包含这些数据
+            //$amount = $request->input('amount'); // 单位：分
+            //$currency = $request->input('currency');
+
+            // 创建 PaymentIntent
+            $intent = PaymentIntent::create([
+                'amount' => 100,
+                'currency' => 'usd',
+                // 更多需要的参数
+            ]);
+
+            return ApiResponse::success([
+                'intent' => ['clientSecret' => $intent->client_secret],
+            ], SuccessMsg::OPERATION_SUCCESSFUL);
+        } catch (\Exception $e) {
+            // 处理并记录错误
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */

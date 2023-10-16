@@ -7,6 +7,7 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\PaymentController;
 use App\Helpers\ApiResponse;
 use App\Helpers\SuccessMsg;
 
@@ -66,4 +67,6 @@ Route::middleware("auth:sanctum")->group(function () {
         //     'intent' => $user->createSetupIntent()
         // ]);
     });
+    Route::get('/payment-intent', [PaymentController::class, 'createPaymentIntent']);
+
 });
